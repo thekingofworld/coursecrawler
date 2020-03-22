@@ -48,6 +48,7 @@ type CrawlHistory struct {
 }
 
 type SubjectStat struct {
+	GradeId     int64
 	SubjectId   int64
 	CourseCount int64
 }
@@ -84,8 +85,8 @@ func (rp *repository) GetSubjects(dateStr string) ([]*SubjectStat, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := rp.db.Query("SELECT subject_id,COUNT(course_id) AS CourseCount FROM " +
-		tableName + " GROUP BY subject_id ORDER BY subject_id")
+	rows, err := rp.db.Query("SELECT grade_id,subject_id,COUNT(course_id) AS CourseCount FROM " +
+		tableName + " GROUP BY grade_id,subject_id ORDER BY grade_id,subject_id")
 
 	defer func() {
 		if rows != nil {
@@ -98,7 +99,7 @@ func (rp *repository) GetSubjects(dateStr string) ([]*SubjectStat, error) {
 	}
 	for rows.Next() {
 		subject := &SubjectStat{}
-		err = rows.Scan(&subject.SubjectId, &subject.CourseCount)
+		err = rows.Scan(&subject.GradeId, &subject.SubjectId, &subject.CourseCount)
 		if err != nil {
 			fmt.Println("scan failed: ", err)
 			return nil, err
@@ -108,7 +109,7 @@ func (rp *repository) GetSubjects(dateStr string) ([]*SubjectStat, error) {
 	return subjects, nil
 }
 
-func (rp *repository) GetAllCourses(subjectId int64, dateStr string) ([]*CourseRecord, error) {
+func (rp *repository) GetAllCourses(gradeId, subjectId int64, dateStr string) ([]*CourseRecord, error) {
 	var courses []*CourseRecord
 	tableName, err := rp.getTableNameByDateStr(dateStr)
 	if err != nil {
@@ -116,7 +117,7 @@ func (rp *repository) GetAllCourses(subjectId int64, dateStr string) ([]*CourseR
 	}
 	rows, err := rp.db.Query("SELECT course_id, name, pre_amount, "+
 		"af_amount, te_list, tu_list FROM "+tableName+
-		" WHERE subject_id = ?", subjectId)
+		" WHERE grade_id = ? AND subject_id = ?", gradeId, subjectId)
 
 	defer func() {
 		if rows != nil {

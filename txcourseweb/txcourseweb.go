@@ -13,6 +13,24 @@ import (
 	"time"
 )
 
+var gradeIdToName = map[int64]string{
+	5001: "高一",
+	5002: "高二",
+	5003: "高三",
+	6001: "初一",
+	6002: "初二",
+	6003: "初三",
+	7001: "一年级",
+	7002: "二年级",
+	7003: "三年级",
+	7004: "四年级",
+	7005: "五年级",
+	7006: "六年级",
+	8001: "小班",
+	8002: "中班",
+	8003: "大班",
+}
+
 var subjectIdToName = map[int64]string{
 	6001: "语文",
 	6002: "数学",
@@ -41,8 +59,10 @@ type SubjectStats struct {
 }
 
 type SubjectStat struct {
+	GradeId     int64
 	SubjectId   int64
-	Name        string
+	GradeName   string
+	SubjectName string
 	CourseCount int64
 }
 
@@ -104,8 +124,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, s := range data {
 		stats.Subjects = append(stats.Subjects, &SubjectStat{
+			GradeId:     s.GradeId,
 			SubjectId:   s.SubjectId,
-			Name:        subjectIdToName[s.SubjectId],
+			GradeName:   gradeIdToName[s.GradeId],
+			SubjectName: subjectIdToName[s.SubjectId],
 			CourseCount: s.CourseCount,
 		})
 	}
@@ -118,14 +140,24 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func subjectHandler(w http.ResponseWriter, r *http.Request) {
 	var courses []*Course
 	queryForm, err := url.ParseQuery(r.URL.RawQuery)
-	if err == nil && len(queryForm["subjectId"]) > 0 && len(queryForm["history"]) > 0 {
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(queryForm["gradeId"]) > 0 && len(queryForm["subjectId"]) > 0 &&
+		len(queryForm["history"]) > 0 {
+		gradeId, err := strconv.ParseInt(queryForm["gradeId"][0], 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		subjectId, err := strconv.ParseInt(queryForm["subjectId"][0], 10, 64)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		history := queryForm["history"][0]
-		courseRecords, err := repository.RepoInstance().GetAllCourses(subjectId, history)
+		courseRecords, err := repository.RepoInstance().GetAllCourses(gradeId, subjectId, history)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

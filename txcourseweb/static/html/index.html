@@ -16,13 +16,15 @@
         <div>
             <table>
                 <tr>
+                    <th>年级</th>
                     <th>科目</th>
                     <th>课程数量</th>
                 </tr>
                 {{range .Subjects}}
                     <tr>
-                        <td>{{.Name}}</td>
-                        <td><a href="./subject?subjectId={{.SubjectId}}&history={{$.CurDate}}">{{.CourseCount}}</a></td>
+                        <td>{{.GradeName}}</td>
+                        <td>{{.SubjectName}}</td>
+                        <td><a href="./subject?gradeId={{.GradeId}}&subjectId={{.SubjectId}}&history={{$.CurDate}}">{{.CourseCount}}</a></td>
                     </tr>
                 {{end}}
             </table>
