@@ -27,31 +27,29 @@ type repository struct {
 	db *sql.DB
 }
 
+//课程
 type CourseRecord struct {
-	CourseID  int64
-	GradeID   int64
-	SubjectID int64
-	Name      string
-	PreAmount int64
-	AfAmount  int64
-	TeList    string
-	TuList    string
+	CourseID  int64  //课程id
+	GradeID   int64  //年级id
+	SubjectID int64  //科目id
+	Name      string //课程名称
+	PreAmount int64  //原价
+	AfAmount  int64  //折后价
+	TeList    string //授课老师
+	TuList    string //辅导老师
 }
 
-type SubjectStats struct {
-	History  *CrawlHistory
-	Subjects []*SubjectStat
-}
-
+//抓取历史
 type CrawlHistory struct {
-	StartDate int64
-	EndDate   int64
+	StartDate int64 //数据最早可查时间
+	EndDate   int64 //数据最晚可查时间
 }
 
+//统计信息
 type SubjectStat struct {
-	GradeId     int64
-	SubjectId   int64
-	CourseCount int64
+	GradeId     int64 //年级id
+	SubjectId   int64 //科目id
+	CourseCount int64 //课程数量
 }
 
 func RepoInstance() *repository {
@@ -69,6 +67,7 @@ func RepoInstance() *repository {
 	return defaultRepository
 }
 
+//获取抓取历史
 func (rp *repository) GetCrawlHistory() (*CrawlHistory, error) {
 	crawlHistory := &CrawlHistory{}
 	row := rp.db.QueryRow("select start_time, end_time from "+
@@ -80,6 +79,7 @@ func (rp *repository) GetCrawlHistory() (*CrawlHistory, error) {
 	return crawlHistory, nil
 }
 
+//获取指定日期的课程统计数据
 func (rp *repository) GetSubjects(dateStr string) ([]*SubjectStat, error) {
 	var subjects []*SubjectStat
 	tableName, err := rp.getTableNameByDateStr(dateStr)
@@ -110,6 +110,7 @@ func (rp *repository) GetSubjects(dateStr string) ([]*SubjectStat, error) {
 	return subjects, nil
 }
 
+//获取指定日期、指定年级、科目对应的课程数据
 func (rp *repository) GetAllCourses(gradeId, subjectId int64, dateStr string) ([]*CourseRecord, error) {
 	var courses []*CourseRecord
 	tableName, err := rp.getTableNameByDateStr(dateStr)

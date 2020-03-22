@@ -9,16 +9,16 @@ type Dispatcher struct {
 	maxSysCrawlers int64
 	maxSpeCrawlers int64
 
-	taskQueue      chan Task
-	sysCrawlerPool chan chan Task
-	speCrawlerPool chan chan Task
+	taskQueue      chan Task      //任务队列
+	sysCrawlerPool chan chan Task //系统课爬虫池
+	speCrawlerPool chan chan Task //专题课爬虫池
 	quit           chan bool
 
 	sysCrawlers []*SysCrawler
 	speCrawlers []*SpeCrawler
 
-	wg         sync.WaitGroup
-	crawlersWg sync.WaitGroup
+	wg         sync.WaitGroup //等待任务调度、分发完成
+	crawlersWg sync.WaitGroup //等待爬虫任务执行完成
 }
 
 func NewDispatcher(maxSysCrawlers int64, maxSpeCrawlers int64, taskQueue chan Task) *Dispatcher {

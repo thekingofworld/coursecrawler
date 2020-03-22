@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+//获取当前执行目录
 func GetAppPath() string {
 	file, _ := exec.LookPath(os.Args[0])
 	path, _ := filepath.Abs(file)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+//发送api请求
 func apiRequest(url string, body io.Reader, ret interface{}) error {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, body)
