@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -60,7 +61,7 @@ func RepoInstance() *repository {
 			userName, password, ip, port, defaultRepository.getDBName())
 		DB, err := sql.Open("mysql", conn)
 		if err != nil {
-			fmt.Println("mysql connect failed:", err)
+			log.Println("mysql connect failed:", err)
 			return
 		}
 		defaultRepository.db = DB
@@ -73,7 +74,7 @@ func (rp *repository) GetCrawlHistory() (*CrawlHistory, error) {
 	row := rp.db.QueryRow("select start_time, end_time from "+
 		CrawlHistoryTableName+" where source=?", Source)
 	if err := row.Scan(&crawlHistory.StartDate, &crawlHistory.EndDate); err != nil {
-		fmt.Println("scan err: ", err)
+		log.Println("scan err: ", err)
 		return nil, err
 	}
 	return crawlHistory, nil
@@ -94,14 +95,14 @@ func (rp *repository) GetSubjects(dateStr string) ([]*SubjectStat, error) {
 		}
 	}()
 	if err != nil {
-		fmt.Println("query failed: ", err)
+		log.Println("query failed: ", err)
 		return nil, err
 	}
 	for rows.Next() {
 		subject := &SubjectStat{}
 		err = rows.Scan(&subject.GradeId, &subject.SubjectId, &subject.CourseCount)
 		if err != nil {
-			fmt.Println("scan failed: ", err)
+			log.Println("scan failed: ", err)
 			return nil, err
 		}
 		subjects = append(subjects, subject)
@@ -125,7 +126,7 @@ func (rp *repository) GetAllCourses(gradeId, subjectId int64, dateStr string) ([
 		}
 	}()
 	if err != nil {
-		fmt.Println("query failed: ", err)
+		log.Println("query failed: ", err)
 		return nil, err
 	}
 	for rows.Next() {
@@ -134,7 +135,7 @@ func (rp *repository) GetAllCourses(gradeId, subjectId int64, dateStr string) ([
 			&course.AfAmount, &course.TeList, &course.TuList,
 		)
 		if err != nil {
-			fmt.Println("scan failed: ", err)
+			log.Println("scan failed: ", err)
 			return nil, err
 		}
 		courses = append(courses, course)
@@ -155,7 +156,7 @@ func (rp *repository) UpsertCourse(course *CourseRecord) {
 		course.Name, course.PreAmount, course.AfAmount, course.TeList, course.TuList,
 	)
 	if err != nil {
-		fmt.Printf("upsert course failed,err: %+v", err)
+		log.Printf("upsert course failed,err: %+v", err)
 		return
 	}
 }
@@ -175,7 +176,7 @@ func (rp *repository) CreateTable() error {
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8;`
 
 	if _, err := rp.db.Exec(sql); err != nil {
-		fmt.Println("create table failed:", err)
+		log.Println("create table failed:", err)
 		return err
 	}
 	return nil
@@ -191,7 +192,7 @@ func (rp *repository) UpdateHistory() error {
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8;`
 
 	if _, err := rp.db.Exec(sql); err != nil {
-		fmt.Println("create table failed:", err)
+		log.Println("create table failed:", err)
 		return err
 	}
 
@@ -200,7 +201,7 @@ func (rp *repository) UpdateHistory() error {
 		"end_time = ?"
 	t := time.Now().Unix()
 	if _, err := rp.db.Exec(sql, Source, t, t, t); err != nil {
-		fmt.Println("update history failed:", err)
+		log.Println("update history failed:", err)
 		return err
 	}
 	return nil

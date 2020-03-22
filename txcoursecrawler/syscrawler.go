@@ -3,6 +3,7 @@ package txcoursecrawler
 import (
 	"coursecrawler/internal/repository"
 	"fmt"
+	"log"
 	"sync"
 )
 
@@ -90,22 +91,22 @@ func (sc *SysCrawler) Start() {
 func (sc *SysCrawler) handleTask(task Task) {
 	sysCoursePkgListData, err := sc.getSysCoursePkgList(task.Grade, task.Subject)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	if sysCoursePkgListData == nil || sysCoursePkgListData.RetCode != 0 {
-		fmt.Println("err sysCoursePkgListData: ", sysCoursePkgListData)
+		log.Println("err sysCoursePkgListData: ", sysCoursePkgListData)
 		return
 	}
 	var tmpCourses []*Course
 	for _, sysCoursePkg := range sysCoursePkgListData.SysCoursePkgList {
 		coursePkgInfoData, err := sc.getCoursePkgInfo(sysCoursePkg.SubjectPackageId)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 		if coursePkgInfoData == nil || coursePkgInfoData.RetCode != 0 {
-			fmt.Println("err getCoursePkgInfo: ", coursePkgInfoData)
+			log.Println("err getCoursePkgInfo: ", coursePkgInfoData)
 			continue
 		}
 		tmpCourses = append(tmpCourses, coursePkgInfoData.Courses...)

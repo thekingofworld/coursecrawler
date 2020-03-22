@@ -2,13 +2,17 @@ package main
 
 import (
 	"coursecrawler/txcourseweb"
-	"fmt"
+	"log"
 )
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func main() {
 	tw, err := txcourseweb.NewTxCourseWeb()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	tw.Run()

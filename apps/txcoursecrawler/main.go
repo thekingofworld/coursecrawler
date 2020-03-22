@@ -3,10 +3,14 @@ package main
 import (
 	"coursecrawler/txcoursecrawler"
 	"flag"
-	"fmt"
+	"log"
 	"os"
 	"time"
 )
+
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
 
 func main() {
 	t := time.Now()
@@ -17,13 +21,13 @@ func main() {
 	flagSet.Parse(os.Args[1:])
 	tc, err := txcoursecrawler.NewTxCourseCrawler(opts)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	err = tc.Run()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	fmt.Println(time.Since(t))
+	log.Println(time.Since(t))
 }

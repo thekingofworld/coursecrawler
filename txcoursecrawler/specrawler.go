@@ -3,6 +3,7 @@ package txcoursecrawler
 import (
 	"coursecrawler/internal/repository"
 	"fmt"
+	"log"
 	"sync"
 )
 
@@ -64,12 +65,12 @@ func (spc *SpeCrawler) handleTask(task Task) {
 	for {
 		speCourseListData, err := spc.getSpeCourseListData(task.Grade, task.Subject, page, size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			break
 		}
 		if speCourseListData == nil || speCourseListData.RetCode != 0 ||
 			speCourseListData.SpeCourseList == nil {
-			fmt.Println("err getSpeCourseListData: ", speCourseListData)
+			log.Println("err getSpeCourseListData: ", speCourseListData)
 			break
 		}
 		tmpCourses = append(tmpCourses, speCourseListData.SpeCourseList.Data...)

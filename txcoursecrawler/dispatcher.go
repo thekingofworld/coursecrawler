@@ -1,7 +1,7 @@
 package txcoursecrawler
 
 import (
-	"fmt"
+	"log"
 	"sync"
 )
 
@@ -47,7 +47,7 @@ func (d *Dispatcher) Run() {
 		d.speCrawlers[i] = speCrawler
 	}
 	go d.dispatch()
-	fmt.Println("dispatcher started")
+	log.Println("dispatcher started")
 }
 
 func (d *Dispatcher) dispatch() {
@@ -62,7 +62,7 @@ func (d *Dispatcher) dispatch() {
 				} else if t.Type == SpeTask {
 					taskC = <-d.speCrawlerPool
 				} else {
-					fmt.Println("not support this task type", t.Type)
+					log.Println("not support this task type", t.Type)
 					return
 				}
 				taskC <- t
@@ -92,5 +92,5 @@ func (d *Dispatcher) Stop() {
 		}(speCrawler)
 	}
 	d.crawlersWg.Wait()
-	fmt.Println("dispatcher stoped")
+	log.Println("dispatcher stoped")
 }
