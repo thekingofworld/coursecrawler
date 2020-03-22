@@ -1,6 +1,6 @@
 # coursecrawler
 
-本项目主要用来抓取腾讯企鹅辅导官网的数据：https://fudao.qq.com/,并提供了一个简易的web后台进行展示
+本项目主要用来抓取腾讯企鹅辅导官网的数据：[https://fudao.qq.com/](https://fudao.qq.com/), 并提供了一个简易的web后台进行数据展示
 
 ## 功能介绍
 ### 1.数据抓取
