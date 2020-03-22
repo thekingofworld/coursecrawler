@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>
+            腾讯企鹅辅导
+        </title>
+    </head>
+    <body>
+        <div>
+            <a href="#" onClick="javascript:history.back(-1);">返回上一页</a>
+            <table>
+                <tr>
+                    <th>课程id</th>
+                    <th>课程名称</th>
+                    <th>课程原价</th>
+                    <th>课程折后价</th>
+                    <th>授课老师</th>
+                    <th>辅导老师</th>
+                </tr>
+                {{range .}}
+                    <tr>
+                        <td>{{.CourseID}}</td>
+                        <td>{{.Name}}</td>
+                        <td>￥{{divide .PreAmount 100}}</td>
+                        <td>￥{{divide .AfAmount 100}}</td>
+                        <td>{{.TeList}}</td>
+                        <td>{{.TuList}}</td>
+                    </tr>
+                {{end}}
+            </table>
+        </div>
+    </body>
+</html>

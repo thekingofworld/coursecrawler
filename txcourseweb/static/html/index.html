@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>
+            腾讯企鹅辅导
+        </title>
+    </head>
+    <body>
+        <div>
+            <form name="input" method="get">
+                查看历史数据: <input type="date" name="history" min="{{.StartDate}}" max="{{.EndDate}}">
+                <input type="submit" value="查看"><br/>
+                当前所查看日期：{{.CurDate}}
+                <br/>
+            </form>
+        </div>
+        <div>
+            <table>
+                <tr>
+                    <th>科目</th>
+                    <th>课程数量</th>
+                </tr>
+                {{range .Subjects}}
+                    <tr>
+                        <td>{{.Name}}</td>
+                        <td><a href="./subject?subjectId={{.SubjectId}}&history={{$.CurDate}}">{{.CourseCount}}</a></td>
+                    </tr>
+                {{end}}
+            </table>
+        </div>
+    </body>
+</html>
