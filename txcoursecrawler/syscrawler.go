@@ -112,9 +112,7 @@ func (sc *SysCrawler) handleTask(task Task) {
 		tmpCourses = append(tmpCourses, coursePkgInfoData.Courses...)
 	}
 	records := DefaultCourseConv.convertCourseSliceToRecords(task.Grade, task.Subject, tmpCourses)
-	for _, record := range records {
-		repository.RepoInstance().UpsertCourse(record)
-	}
+	repository.RepoInstance().BulkInsert(records)
 }
 
 func (sc *SysCrawler) getSysCoursePkgList(grade int64, subject int64) (*SysCoursePkgListData, error) {

@@ -80,9 +80,7 @@ func (spc *SpeCrawler) handleTask(task Task) {
 		page++
 	}
 	records := DefaultCourseConv.convertCourseSliceToRecords(task.Grade, task.Subject, tmpCourses)
-	for _, record := range records {
-		repository.RepoInstance().UpsertCourse(record)
-	}
+	repository.RepoInstance().BulkInsert(records)
 }
 
 func (spc *SpeCrawler) getSpeCourseListData(grade int64, subject int64, page int64, size int64) (*SpeCourseListData, error) {

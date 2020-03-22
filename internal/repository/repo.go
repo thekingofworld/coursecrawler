@@ -144,22 +144,37 @@ func (rp *repository) GetAllCourses(gradeId, subjectId int64, dateStr string) ([
 	return courses, nil
 }
 
-func (rp *repository) UpsertCourse(course *CourseRecord) {
-	if course == nil {
-		return
-	}
-	table := rp.getCurTableName()
-	upSql := fmt.Sprintf("INSERT INTO %s(course_id, grade_id, subject_id, name, pre_amount, af_amount, te_list, tu_list) "+
-		"values(?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE "+
-		"name = ?, pre_amount = ?, af_amount = ?, te_list = ?, tu_list = ?", table)
-	_, err := rp.db.Exec(upSql, course.CourseID, course.GradeID, course.SubjectID,
-		course.Name, course.PreAmount, course.AfAmount, course.TeList, course.TuList,
-		course.Name, course.PreAmount, course.AfAmount, course.TeList, course.TuList,
-	)
+func (rp *repository) BulkInsert(courses []*CourseRecord) {
+	tx, err := rp.db.Begin()
 	if err != nil {
-		log.Printf("upsert course failed,err: %+v", err)
+		log.Println(err)
 		return
 	}
+	stmt, err := tx.Prepare(fmt.Sprintf("INSERT INTO %s(course_id, grade_id, subject_id, name, pre_amount, af_amount, te_list, tu_list) "+
+		"values(?, ?, ?, ?, ?, ?, ?, ?)", rp.getCurTableName()))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+	for _, c := range courses {
+		_, err = stmt.Exec(c.CourseID, c.GradeID, c.SubjectID, c.Name,
+			c.PreAmount, c.AfAmount, c.TeList, c.TuList)
+		if err != nil {
+			log.Println(err)
+			err = tx.Rollback()
+			if err != nil {
+				log.Println(err)
+			}
+			return
+		}
+	}
+	err = tx.Commit()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	return
 }
 
 func (rp *repository) CreateTable() error {
@@ -173,7 +188,7 @@ func (rp *repository) CreateTable() error {
 		af_amount INT,
 		te_list VARCHAR(255),
 		tu_list VARCHAR(255),
-		UNIQUE (course_id)
+		UNIQUE (course_id, grade_id, subject_id)
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8;`
 
 	if _, err := rp.db.Exec(sql); err != nil {
