@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-const DBName = "tx_course"
 const CrawlHistoryTableName = "crawl_history"
 const Source = 1
 
@@ -20,6 +19,7 @@ var (
 	password = os.Getenv("MYSQLPass")
 	ip       = os.Getenv("MYSQLAddr")
 	port     = os.Getenv("MYSQLPort")
+	dbName   = os.Getenv("MYSQLDBName")
 )
 
 type repository struct {
@@ -207,7 +207,7 @@ func (rp *repository) UpdateHistory() error {
 }
 
 func (rp *repository) getDBName() string {
-	return DBName
+	return dbName
 }
 
 func (rp *repository) getCurTableName() string {

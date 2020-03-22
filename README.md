@@ -23,13 +23,12 @@
 ### 1.数据库设置
 项目目前使用MySQL进行数据存储，需要进行一定的配置，如下：
 ```
-1.创建数据库：
-    create database tx_course
-2.设置环境变量：
+1.设置环境变量：
     export MYSQLUser=xxxx //数据库账户
     export MYSQLPass=xxxx //数据库密码
     export MYSQLAddr=xxxx //数据库地址
     export MYSQLPort=xxxx //数据库端口号
+    export MYSQLDBName=xxxx //数据库名称
 ```
 
 ### 2.安装
